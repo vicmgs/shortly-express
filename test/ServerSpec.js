@@ -167,7 +167,7 @@ describe('', function() {
         });
       });
 
-      it('Returns the same shortened code', function(done) {
+      xit('Returns the same shortened code', function(done) {
         var options = {
           'method': 'POST',
           'followAllRedirects': true,

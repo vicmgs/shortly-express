@@ -30,27 +30,21 @@ var sess;
 app.get('/', 
 function(req, res) {
   sess = req.session;
-  if (!sess.username) {
-    res.redirect('/login');
-  }
+  util.checkUser(sess.username, res);
   res.render('index');
 });
 
 app.get('/create', 
 function(req, res) {
   sess = req.session;
-  if (!sess.username) {
-    res.redirect('/login');
-  }
+  util.checkUser(sess.username, res);
   res.render('index');
 });
 
 app.get('/links', 
 function(req, res) {
   sess = req.session;
-  if (!sess.username) {
-    res.redirect('/login');
-  }
+  util.checkUser(sess.username, res);
 
   Links.reset().fetch().then(function(links) {
     var subset = links.models.filter(function(link) {
@@ -132,6 +126,13 @@ function(req, res) {
     sess.username = user.id;  
     res.status(200).redirect('/');
   });
+});
+
+app.get('/logout', 
+function(req, res) {
+  sess = req.session;
+  sess.username = null;
+  res.redirect('/login');
 });
 
 /************************************************************/
