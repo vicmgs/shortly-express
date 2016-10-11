@@ -53,12 +53,16 @@ function(req, res) {
   }
 
   Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
+    var subset = links.models.filter(function(link) {
+      return link.attributes.userId === sess.username;
+    });
+    res.status(200).send(subset);
   });
 });
 
 app.post('/links', 
 function(req, res) {
+  sess = req.session;
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -66,7 +70,7 @@ function(req, res) {
     return res.sendStatus(404);
   }
 
-  new Link({ url: uri }).fetch().then(function(found) {
+  new Link({ url: uri, userId: sess.username }).fetch().then(function(found) {
     if (found) {
       res.status(200).send(found.attributes);
     } else {
@@ -79,7 +83,8 @@ function(req, res) {
         Links.create({
           url: uri,
           title: title,
-          baseUrl: req.headers.origin
+          baseUrl: req.headers.origin,
+          userId: sess.username
         })
         .then(function(newLink) {
           res.status(200).send(newLink);
@@ -101,12 +106,12 @@ app.post('/login',
 function(req, res) {
   // check if user is in database, then determine if it should be stored in session.
   new User({ username: req.body.username }).fetch().then(function(found) {
-    if (found) {
+    if (found && found.attributes.password === req.body.password) {
       sess = req.session;
-      sess.username = req.body.username;
+      sess.username = found.id;
       res.status(200).redirect('/');
     } else {
-      res.status(200).redirect('/login');
+      res.status(401).redirect('/login');
     }
   });
 });
@@ -124,7 +129,7 @@ function(req, res) {
   })
   .then(function(user) {
     sess = req.session;
-    sess.username = user.username;  
+    sess.username = user.id;  
     res.status(200).redirect('/');
   });
 });
