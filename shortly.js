@@ -99,12 +99,34 @@ function(req, res) {
 
 app.post('/login', 
 function(req, res) {
-  sess = req.session;
   // check if user is in database, then determine if it should be stored in session.
+  new User({ username: req.body.username }).fetch().then(function(found) {
+    if (found) {
+      sess = req.session;
+      sess.username = req.body.username;
+      res.status(200).redirect('/');
+    } else {
+      res.status(200).redirect('/login');
+    }
+  });
+});
 
+app.get('/signup', 
+function(req, res) {
+  res.render('signup');
+});
 
-  sess.username = req.body.username;
-  res.redirect('/');
+app.post('/signup', 
+function(req, res) {
+  Users.create({
+    username: req.body.username,
+    password: req.body.password
+  })
+  .then(function(user) {
+    sess = req.session;
+    sess.username = user.username;  
+    res.status(200).redirect('/');
+  });
 });
 
 /************************************************************/

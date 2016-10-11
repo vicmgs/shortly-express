@@ -4,7 +4,8 @@ window.Shortly = Backbone.View.extend({
   events: {
     'click li a.index': 'renderIndexView',
     'click li a.create': 'renderCreateView',
-    'click li a.login': 'renderLoginView'
+    'click li a.login': 'renderLoginView',
+    'click li a.signup': 'renderSignupView'
   },
 
   initialize: function() {
@@ -35,6 +36,11 @@ window.Shortly = Backbone.View.extend({
   renderLoginView: function(e) {
     e && e.preventDefault();
     this.router.navigate('/login', { trigger: true });
+  },
+
+  renderSignupView: function(e) {
+    e && e.preventDefault();
+    this.router.navigate('/signup', { trigger: true });
   },
 
   updateNav: function(routeName) {
