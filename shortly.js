@@ -10,8 +10,11 @@ var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
+var session = require('express-session');
 
 var app = express();
+
+app.use(session({secret: '1234', cookie: { maxAge: 60000 }}));
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -22,19 +25,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+var sess;
 
 app.get('/', 
 function(req, res) {
+  sess = req.session;
+  if (!sess.username) {
+    res.redirect('/login');
+  }
   res.render('index');
 });
 
 app.get('/create', 
 function(req, res) {
+  sess = req.session;
+  if (!sess.username) {
+    res.redirect('/login');
+  }
   res.render('index');
 });
 
 app.get('/links', 
 function(req, res) {
+  sess = req.session;
+  if (!sess.username) {
+    res.redirect('/login');
+  }
+
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
@@ -80,6 +97,15 @@ function(req, res) {
   res.render('login');
 });
 
+app.post('/login', 
+function(req, res) {
+  sess = req.session;
+  // check if user is in database, then determine if it should be stored in session.
+
+
+  sess.username = req.body.username;
+  res.redirect('/');
+});
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
