@@ -11,6 +11,7 @@ var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 var session = require('express-session');
+var bcrypt = require('bcrypt-nodejs');
 
 var app = express();
 
@@ -100,7 +101,20 @@ app.post('/login',
 function(req, res) {
   // check if user is in database, then determine if it should be stored in session.
   new User({ username: req.body.username }).fetch().then(function(found) {
-    if (found && found.attributes.password === req.body.password) {
+
+    // console.log('BODY PASSWORD===========', bcrypt.hashSync(req.body.password))
+    // var hash = bcrypt.hashSync(req.body.password);
+  
+    // console.log('FOUND PASSWORD==========', found.attributes.password)
+    var result = bcrypt.compareSync(req.body.password, found.attributes.password);
+
+    // console.log('=======================', result)
+
+    // console.log('=========================', found.attributes.password)
+    // console.log(bcrypt.hashSync(req.body.password));
+
+    if (found && result) {
+
       sess = req.session;
       sess.username = found.id;
       res.status(200).redirect('/');
@@ -119,7 +133,7 @@ app.post('/signup',
 function(req, res) {
   Users.create({
     username: req.body.username,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password)
   })
   .then(function(user) {
     sess = req.session;
