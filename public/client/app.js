@@ -35,15 +35,15 @@ window.Shortly = Backbone.View.extend({
   },
 
   renderLoginView: function(e) {
-    Backbone.history.navigate('/login', true);
+    this.router.route('/login', 'login');
   },
 
   renderSignupView: function(e) {
-    Backbone.history.navigate('/signup', true);
+    this.router.route('/signup', 'signup');
   },
 
   renderLogoutView: function(e) {
-    Backbone.history.navigate('/logout', true);
+    this.router.route('/logout', 'logout');
   },
 
   updateNav: function(routeName) {

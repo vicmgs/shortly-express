@@ -102,16 +102,7 @@ function(req, res) {
   // check if user is in database, then determine if it should be stored in session.
   new User({ username: req.body.username }).fetch().then(function(found) {
 
-    // console.log('BODY PASSWORD===========', bcrypt.hashSync(req.body.password))
-    // var hash = bcrypt.hashSync(req.body.password);
-  
-    // console.log('FOUND PASSWORD==========', found.attributes.password)
     var result = bcrypt.compareSync(req.body.password, found.attributes.password);
-
-    // console.log('=======================', result)
-
-    // console.log('=========================', found.attributes.password)
-    // console.log(bcrypt.hashSync(req.body.password));
 
     if (found && result) {
 
