@@ -28,21 +28,21 @@ app.use(express.static(__dirname + '/public'));
 
 var sess;
 
-app.get('/', 
+app.get('/',
 function(req, res) {
   sess = req.session;
   util.checkUser(sess.username, res);
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 function(req, res) {
   sess = req.session;
   util.checkUser(sess.username, res);
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 function(req, res) {
   sess = req.session;
   util.checkUser(sess.username, res);
@@ -55,7 +55,7 @@ function(req, res) {
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   sess = req.session;
   var uri = req.body.url;
@@ -92,35 +92,32 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-app.get('/login', 
+app.get('/login',
 function(req, res) {
   res.render('login');
 });
 
-app.post('/login', 
+app.post('/login',
 function(req, res) {
   // check if user is in database, then determine if it should be stored in session.
   new User({ username: req.body.username }).fetch().then(function(found) {
-
-    var result = bcrypt.compareSync(req.body.password, found.attributes.password);
-
-    if (found && result) {
+    if (found && bcrypt.compareSync(req.body.password, found.attributes.password)) {
 
       sess = req.session;
       sess.username = found.id;
-      res.status(200).redirect('/');
+      res.redirect('/');
     } else {
-      res.status(401).redirect('/login');
+      res.redirect('/login');
     }
   });
 });
 
-app.get('/signup', 
+app.get('/signup',
 function(req, res) {
   res.render('signup');
 });
 
-app.post('/signup', 
+app.post('/signup',
 function(req, res) {
   Users.create({
     username: req.body.username,
@@ -128,12 +125,12 @@ function(req, res) {
   })
   .then(function(user) {
     sess = req.session;
-    sess.username = user.id;  
+    sess.username = user.id;
     res.status(200).redirect('/');
   });
 });
 
-app.get('/logout', 
+app.get('/logout',
 function(req, res) {
   sess = req.session;
   sess.username = null;
