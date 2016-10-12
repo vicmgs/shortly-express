@@ -9,9 +9,8 @@
     "node": "5.11.1"
   },
   "scripts": {
-
     "start": "shortly.js",
-    "start:es6": "shortly.js",
+    "start:es6": "shortly.js"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
